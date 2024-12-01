@@ -2,60 +2,28 @@ package day01
 
 import readInput
 import println
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 fun main() {
     fun part1(input: List<String>): Int {
-        var totalDistance = 0
-        val leftList: MutableList<Int> = mutableListOf()
-        val rightList: MutableList<Int> = mutableListOf()
+        val (leftList, rightList) = input
+            .map { it.split("   ").map(String::toInt) }
+            .map { it[0] to it[1] }
+            .unzip()
 
-        for (line in input) {
-            val values = line.split("   ")
-            val left = values[0].toInt()
-            val right = values[1].toInt()
-            leftList.add(left)
-            rightList.add(right)
-        }
-
-        leftList.sort()
-        leftList.reverse()
-        rightList.sort()
-        rightList.reverse()
-
-        for (i in 0..<leftList.size) {
-            totalDistance += max(leftList[i], rightList[i]) - min(leftList[i], rightList[i])
-        }
-
-        return totalDistance
+        return leftList.sorted().zip(rightList.sorted())
+            .sumOf { (left, right) -> abs(left - right) }
     }
 
     fun part2(input: List<String>): Int {
-        val leftList: MutableList<Int> = mutableListOf()
-        val rightList: MutableList<Int> = mutableListOf()
-        val similairityScores: MutableList<Int> = mutableListOf()
+        val (leftList, rightList) = input
+            .map { it.split("   ").map(String::toInt) }
+            .map { it[0] to it[1] }
+            .unzip()
 
-        for (line in input) {
-            val values = line.split("   ")
-            val left = values[0].toInt()
-            val right = values[1].toInt()
-            leftList.add(left)
-            rightList.add(right)
-        }
-
-
-
-        for (i in 0..<leftList.size) {
-
-            val similairityScore = rightList.count {
-                it == leftList[i]
-            }
-
-            similairityScores.add(leftList[i] * similairityScore)
-        }
-
-        return similairityScores.sum()
+        return leftList.sumOf { left -> left * rightList.count { it == left } }
     }
 
     // Test if implementation meets criteria from the challenge description, like:
