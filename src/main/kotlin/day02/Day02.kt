@@ -58,14 +58,3 @@ private fun isSafe(levels: List<Int>): Boolean {
 
     return allDifferencesValid && (isIncreasing || isDecreasing)
 }
-
-
-private fun isUnsafeAt(levels: List<Int>): Int {
-    val pairs = levels.zipWithNext()
-    for ((index, pair) in pairs.withIndex()) {
-        if (abs(pair.first - pair.second) !in 1..3) {
-            return index
-        }
-    }
-    return -1
-}
