@@ -19,24 +19,46 @@ fun main() {
     }
 
     fun part2(input: List<String>): Long {
-        val regex = Regex("""mul\((\d+),(\d+)\)""")
 
-        val split = input.joinToString("").split("don't()")
-        val enabledParts = split.subList(1, split.size)
 
-        val enabledContent = enabledParts
-            .map { it.split("do()") }
-            .map { it.drop(1).joinToString("") }
-            .joinToString("")
+        val regex = Regex("""mul\((\d+),(\d+)\)|do\(\)|don't\(\)""")
+        var total = 0L
+        val matches = regex.findAll(input.joinToString(""))
 
-        fun multi(content: String): Long {
-            return regex.findAll(content).sumOf { matchResult ->
-                val (a, b) = matchResult.destructured
-                a.toLong() * b.toLong()
+        /* Easier way to solve*/
+        var enabled = true
+        for (match in matches) {
+            if (match.value == "do()") {
+                enabled = true
+            } else if (match.value == "don't()") {
+                enabled = false
+            }
+            else {
+                if (enabled) {
+                    val (a, b) = match.destructured
+                    total += a.toLong() * b.toLong()
+
+                }
             }
         }
 
-        return multi(split[0]) + multi(enabledContent)
+
+        /*        val split = input.joinToString("").split("don't()")
+                val enabledParts = split.subList(1, split.size)
+
+                val enabledContent = enabledParts
+                    .map { it.split("do()") }
+                    .map { it.drop(1).joinToString("") }
+                    .joinToString("")
+
+                fun multi(content: String): Long {
+                    return regex.findAll(content).sumOf { matchResult ->
+                        val (a, b) = matchResult.destructured
+                        a.toLong() * b.toLong()
+                    }
+                }*/
+
+        return total
     }
 
     // Test if implementation meets criteria from the challenge description, like:
