@@ -6,16 +6,18 @@ import println
 fun main() {
 
     fun part1(input: List<String>): Int {
-        val grid = Array(input.size) { y -> Array(input[0].length) { x -> input[y][x] } }
+        val grid = input.map { it.toCharArray() }
+        val rows = grid.size
+        val cols = grid[0].size
+
         val visited = mutableSetOf<Pair<Int, Int>>()
 
         var startingPosition: Pair<Int, Int>? = null
-
-        for (y in input.indices) {
-            for (x in input[0].indices) {
-                if (grid[y][x] == '^') {
-                    startingPosition = y to x
-                }
+        for (i in grid.indices) {
+            val colIndex = grid[i].indexOf('^')
+            if (colIndex != -1) {
+                startingPosition = Pair(i, colIndex)
+                break
             }
         }
 
@@ -27,35 +29,31 @@ fun main() {
         )
 
         var endReached = false
-        var currentPosition = startingPosition
+        var currentPos = startingPosition
         visited.add(startingPosition!!)
-
+        var currentDirection = 0
 
         while (!endReached) {
+            val (dy, dx) = directions[currentDirection]
+            var obstacleHit = false
 
-            for (direction in directions) {
-                val (dy, dx) = direction
-                var obstacleHit = false
+            while (!obstacleHit && !endReached) {
+                val (y, x) = currentPos!!
+                val (ny, nx) = y + dy to x + dx
 
-                while (!obstacleHit && !endReached) {
-                    val (y, x) = currentPosition!!
-                    val (ny, nx) = y + dy to x + dx
-                    if (ny in input.indices && nx in input[0].indices) {
-                        if (grid[ny][nx] == '#') {
-                            obstacleHit = true
-                        }
-                        else {
-
-                            currentPosition = ny to nx
-                            visited.add(currentPosition)
-                        }
+                if (ny in 0 until rows && nx in 0 until cols) {
+                    if (grid[ny][nx] == '#') {
+                        obstacleHit = true
+                    } else {
+                        currentPos = ny to nx
+                        visited.add(currentPos)
                     }
-                    else {
-                        endReached = true
-                    }
+                } else {
+                    endReached = true
                 }
-
-
+            }
+            if (!endReached) {
+                currentDirection = (currentDirection + 1) % 4
             }
         }
 
@@ -69,8 +67,8 @@ fun main() {
 
     // Test if implementation meets criteria from the challenge description, like:
     val testInput = readInput("day06", "day06_test")
-    val testAnswer = 6
-    val testResult = part2(testInput)
+    val testAnswer = 41
+    val testResult = part1(testInput)
     check(testResult == testAnswer) { "answer to test is wrong: Your answer = $testResult expected: $testAnswer" }
 
     val input = readInput("day06", "day06")
@@ -79,3 +77,6 @@ fun main() {
 }
 
 
+fun isWithinBounds(y: Int, x: Int, rows: Int, cols: Int): Boolean {
+    return y in 0 until rows && x in 0 until cols
+}
